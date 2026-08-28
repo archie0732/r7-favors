@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="以 GitHub Repository 為資料來源的個人工具收藏庫。">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f4f0e8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+    <title>R7 Favors — 個人工具箱</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body data-page="public">
+    <a class="skip-link" href="#main-content">跳到主要內容</a>
+    <header class="site-header">
+      <a class="brand" href="./index.html" aria-label="R7 Favors 首頁">
+        <span class="brand-mark" aria-hidden="true">R7</span>
+        <span><strong>Favors</strong><small>personal toolbox</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主要導覽">
+        <a class="is-current" href="./index.html" aria-current="page">公開工具箱</a>
+        <a href="./private.html">私人連結庫</a>
+      </nav>
+      <button class="button button-quiet" id="admin-button" type="button">管理</button>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">PUBLIC COLLECTION</p>
+          <h1 id="page-title">把好工具，放在伸手可及的地方。</h1>
+          <p class="lede">瀏覽常用網站、靈感與工作捷徑。資料公開，編輯權限由 GitHub Token 控制。</p>
+        </div>
+        <div class="collection-count" aria-live="polite">
+          <strong id="visible-count">—</strong>
+          <span>個收藏</span>
+        </div>
+      </section>
+
+      <section class="tool-surface" aria-label="工具收藏">
+        <form class="toolbar" id="filter-form" role="search">
+          <label class="search-field">
+            <span class="visually-hidden">搜尋工具</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 4 4"></path></svg>
+            <input id="search-input" type="search" autocomplete="off" placeholder="搜尋名稱、說明或標籤…">
+          </label>
+          <label class="select-field">
+            <span class="visually-hidden">依類型篩選</span>
+            <select id="type-filter"><option value="">所有類型</option></select>
+          </label>
+          <label class="checkbox-field"><input id="favorites-filter" type="checkbox"><span>只看收藏</span></label>
+          <button class="button button-quiet" id="clear-filters" type="button">清除</button>
+        </form>
+        <div class="tag-filters" id="tag-filters" aria-label="依標籤篩選"></div>
+        <div class="status-panel" id="status-panel" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>正在整理工具箱…</p>
+        </div>
+        <div class="card-grid" id="card-grid" hidden></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><span>R7 Favors</span><span>資料由 GitHub Repository 提供</span></footer>
+
+    <dialog class="dialog" id="token-dialog" aria-labelledby="token-title">
+      <form method="dialog" class="dialog-card" id="token-form">
+        <button class="icon-button dialog-close" value="cancel" aria-label="關閉">×</button>
+        <p class="eyebrow">ADMIN ACCESS</p>
+        <h2 id="token-title">連接 GitHub</h2>
+        <p>Token 只保留在記憶體；若勾選暫存，關閉此分頁後即清除。</p>
+        <label class="form-field"><span>Fine-grained personal access token</span><input id="token-input" type="password" autocomplete="off" spellcheck="false" required placeholder="github_pat_…"></label>
+        <label class="checkbox-field"><input id="remember-token" type="checkbox"><span>在此分頁期間暫存</span></label>
+        <p class="form-error" id="token-error" role="alert"></p>
+        <div class="dialog-actions"><button class="button button-primary" value="default" type="submit">驗證並進入管理</button></div>
+      </form>
+    </dialog>
+
+    <div id="modal-root"></div>
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <script type="module" src="./js/public-page.js"></script>
+  </body>
+</html>

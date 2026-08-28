@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">預設工具縮圖</title>
+  <desc id="desc">由圓點、線條和 R7 字樣組成的抽象圖案</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efe6d8"/><stop offset="1" stop-color="#c8d9d4"/></linearGradient>
+    <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="2" fill="#2f6f68" opacity=".17"/></pattern>
+  </defs>
+  <rect width="800" height="450" rx="24" fill="url(#bg)"/>
+  <rect width="800" height="450" rx="24" fill="url(#dots)"/>
+  <path d="M95 327C217 149 371 360 508 183c58-74 118-91 197-50" fill="none" stroke="#2f6f68" stroke-width="6" stroke-linecap="round" opacity=".6"/>
+  <circle cx="96" cy="327" r="13" fill="#e0523f"/><circle cx="508" cy="183" r="13" fill="#e0523f"/>
+  <text x="400" y="258" text-anchor="middle" font-family="ui-monospace,monospace" font-size="112" font-weight="700" fill="#26332f">R7</text>
+</svg>

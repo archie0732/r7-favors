@@ -1,0 +1,12 @@
+{
+  "name": "r7-favors",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/data-model.test.mjs tests/search.test.mjs tests/github-store.test.mjs tests/security.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
