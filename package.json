@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/data-model.test.mjs tests/search.test.mjs tests/github-store.test.mjs tests/security.test.mjs"
+    "test": "node --test tests/data-model.test.mjs tests/search.test.mjs tests/back-to-top.test.mjs tests/github-store.test.mjs tests/security.test.mjs"
   },
   "engines": {
     "node": ">=20"

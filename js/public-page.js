@@ -3,6 +3,7 @@ import { GitHubContentsStore } from "./github-store.js";
 import { ToolboxApp } from "./toolbox-app.js";
 import { byId, clearSessionToken, errorMessage, isConfiguredSource, readSessionToken, setBusy, writeSessionToken } from "./utils.js";
 import { showToast } from "./ui.js";
+import { setupBackToTop } from "./back-to-top.js";
 
 const source = APP_CONFIG.publicSource;
 const configured = isConfiguredSource(source);
@@ -86,3 +87,5 @@ const savedToken = configured ? readSessionToken(source) : "";
 if (savedToken) await unlockAdmin(savedToken, true, { silent: true });
 
 window.addEventListener("pagehide", () => app.dispose(), { once: true });
+
+setupBackToTop();

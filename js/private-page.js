@@ -17,6 +17,7 @@ import {
   writeSessionToken
 } from "./utils.js";
 import { showToast } from "./ui.js";
+import { setupBackToTop } from "./back-to-top.js";
 
 // The target Repository is chosen in the browser. `source` stays a single
 // mutable object because the store, the app and the thumbnail resolver all
@@ -183,3 +184,5 @@ if (initialRepo) {
 }
 
 window.addEventListener("pagehide", () => app.dispose(), { once: true });
+
+setupBackToTop();
