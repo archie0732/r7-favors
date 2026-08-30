@@ -1,4 +1,4 @@
-import { normalizeToolboxData, upsertItem, removeItem, createTaxonomyId, DATA_LIMITS } from "./data-model.js";
+import { normalizeToolboxData, upsertItem, removeItem, createTaxonomyId, groupedTags, DATA_LIMITS } from "./data-model.js";
 import { filterItems } from "./search.js";
 import { prepareThumbnailUpload, ThumbnailResolver } from "./thumbnails.js";
 import { byId, debounce, errorMessage, formatDate, setBusy } from "./utils.js";
@@ -114,17 +114,29 @@ export class ToolboxApp {
     this.data.types.forEach((type) => this.typeFilter.append(element("option", { value: type.id, text: type.name })));
     this.typeFilter.value = this.data.types.some(({ id }) => id === currentType) ? currentType : "";
     this.filters.typeId = this.typeFilter.value;
-    this.tagFilters.replaceChildren();
-    this.data.tags.forEach((tag) => {
-      this.tagFilters.append(button(`#${tag.name}`, "tag-chip", {
-        "aria-pressed": this.filters.tagId === tag.id ? "true" : "false",
-        onclick: () => {
-          this.filters.tagId = this.filters.tagId === tag.id ? "" : tag.id;
-          this.renderFilterOptions();
-          this.renderItems();
-        }
-      }));
-    });
+    this.renderTagFilters();
+  }
+
+  renderTagFilters() {
+    const counts = new Map();
+    this.data.items.forEach((item) => item.tagIds.forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1)));
+    const groups = groupedTags(this.data, { ungroupedName: "其它標籤" });
+    this.tagFilters.replaceChildren(...groups.map(({ group, tags }) => element("div", { className: "tag-group" }, [
+      element("span", { className: "tag-group-label", text: group.name }),
+      element("div", { className: "tag-group-chips" }, tags.map((tag) => {
+        const chip = button(`#${tag.name}`, "tag-chip", {
+          "aria-pressed": this.filters.tagId === tag.id ? "true" : "false",
+          onclick: () => {
+            this.filters.tagId = this.filters.tagId === tag.id ? "" : tag.id;
+            this.renderTagFilters();
+            this.renderItems();
+          }
+        });
+        chip.append(element("span", { className: "tag-count", text: String(counts.get(tag.id) ?? 0) }));
+        return chip;
+      }))
+    ])));
+    this.tagFilters.hidden = !groups.length;
   }
 
   async renderItems() {
@@ -193,11 +205,16 @@ export class ToolboxApp {
     typeSelect.value = item?.typeId || this.data.types[0].id;
     const favoriteInput = element("input", { name: "favorite", type: "checkbox" });
     favoriteInput.checked = item?.favorite === true;
-    const tags = element("div", { className: "choice-grid" }, this.data.tags.map((tag) => {
-      const input = element("input", { type: "checkbox", name: "tagIds", value: tag.id });
-      input.checked = item?.tagIds.includes(tag.id) ?? false;
-      return element("label", { className: "choice-chip" }, [input, element("span", { text: tag.name })]);
-    }));
+    const tags = element("div", { className: "choice-groups" }, groupedTags(this.data, { ungroupedName: "其它標籤" }).map(({ group, tags: groupTags }) =>
+      element("div", { className: "choice-group" }, [
+        element("span", { className: "tag-group-label", text: group.name }),
+        element("div", { className: "choice-grid" }, groupTags.map((tag) => {
+          const input = element("input", { type: "checkbox", name: "tagIds", value: tag.id });
+          input.checked = item?.tagIds.includes(tag.id) ?? false;
+          return element("label", { className: "choice-chip" }, [input, element("span", { text: tag.name })]);
+        }))
+      ])
+    ));
     const thumbnailMode = element("select", { name: "thumbnailMode" }, [
       element("option", { value: "default", text: "使用預設縮圖" }),
       element("option", { value: "url", text: "外部 HTTPS 圖片網址" }),
@@ -298,10 +315,12 @@ export class ToolboxApp {
     const dialog = element("dialog", { className: "dialog dialog-wide", "aria-label": "類型與標籤" });
     const form = element("form", { className: "dialog-card" });
     const typeList = element("div", { className: "taxonomy-list" });
+    const groupList = element("div", { className: "taxonomy-list" });
     const tagList = element("div", { className: "taxonomy-list" });
     const error = element("p", { className: "form-error", role: "alert" });
     const renderLists = () => {
       typeList.replaceChildren(...working.types.map((type) => this.taxonomyRow(type, "type", working, renderLists, error)));
+      groupList.replaceChildren(...working.tagGroups.map((group) => this.taxonomyRow(group, "tagGroup", working, renderLists, error)));
       tagList.replaceChildren(...working.tags.map((tag) => this.taxonomyRow(tag, "tag", working, renderLists, error)));
     };
     const addType = button("＋ 新增類型", "button button-quiet", { onclick: () => {
@@ -309,16 +328,22 @@ export class ToolboxApp {
       working.types.push({ id: createTaxonomyId(name, working.types), name, color: "#2f6f68" });
       renderLists();
     }});
+    const addGroup = button("＋ 新增標籤分類", "button button-quiet", { onclick: () => {
+      const name = `新分類 ${working.tagGroups.length + 1}`;
+      working.tagGroups.push({ id: createTaxonomyId(name, working.tagGroups), name });
+      renderLists();
+    }});
     const addTag = button("＋ 新增標籤", "button button-quiet", { onclick: () => {
       const name = `新標籤 ${working.tags.length + 1}`;
-      working.tags.push({ id: createTaxonomyId(name, working.tags), name });
+      working.tags.push({ id: createTaxonomyId(name, working.tags), name, groupId: working.tagGroups[0]?.id ?? "" });
       renderLists();
     }});
     const submit = button("儲存分類設定", "button button-primary", { type: "submit" });
     form.append(
       closeButton(), element("p", { className: "eyebrow", text: "ORGANIZE" }), element("h2", { text: "類型與標籤" }),
-      element("p", { className: "dialog-copy", text: "類型用於單選分類；標籤可套用多個。名稱忽略大小寫後不可重複。" }),
+      element("p", { className: "dialog-copy", text: "類型用於單選分類；標籤可套用多個，並可歸到「系列」「角色」這類標籤分類下，讓篩選列分區顯示。名稱忽略大小寫後不可重複。" }),
       element("section", { className: "taxonomy-section" }, [element("div", { className: "section-heading" }, [element("h3", { text: "類型" }), addType]), typeList]),
+      element("section", { className: "taxonomy-section" }, [element("div", { className: "section-heading" }, [element("h3", { text: "標籤分類" }), addGroup]), groupList]),
       element("section", { className: "taxonomy-section" }, [element("div", { className: "section-heading" }, [element("h3", { text: "標籤" }), addTag]), tagList]),
       error, element("div", { className: "dialog-actions" }, [button("取消", "button button-quiet", { onclick: () => dialog.close() }), submit])
     );
@@ -346,7 +371,8 @@ export class ToolboxApp {
   }
 
   taxonomyRow(entry, kind, working, rerender, error) {
-    const input = element("input", { type: "text", maxlength: 60, value: entry.name, "aria-label": `${kind === "type" ? "類型" : "標籤"}名稱` });
+    const label = { type: "類型", tagGroup: "標籤分類", tag: "標籤" }[kind];
+    const input = element("input", { type: "text", maxlength: 60, value: entry.name, "aria-label": `${label}名稱` });
     input.addEventListener("input", () => { entry.name = input.value; });
     const children = [input];
     if (kind === "type") {
@@ -354,18 +380,29 @@ export class ToolboxApp {
       color.addEventListener("input", () => { entry.color = color.value; });
       children.push(color);
     }
+    if (kind === "tag") {
+      const group = element("select", { "aria-label": `${entry.name} 所屬分類` }, [
+        element("option", { value: "", text: "未分類" }),
+        ...working.tagGroups.map(({ id, name }) => element("option", { value: id, text: name }))
+      ]);
+      group.value = entry.groupId ?? "";
+      group.addEventListener("change", () => { entry.groupId = group.value; });
+      children.push(group);
+    }
     children.push(button("刪除", "mini-button mini-button-danger", { onclick: () => {
       error.textContent = "";
       if (kind === "type" && working.items.some((item) => item.typeId === entry.id)) {
         error.textContent = `類型「${entry.name}」仍有項目使用，請先調整項目後再刪除。`;
         return;
       }
+      // 刪掉分類只是把底下的標籤退回「未分類」，標籤與項目都保留。
+      if (kind === "tagGroup") working.tags.forEach((tag) => { if (tag.groupId === entry.id) tag.groupId = ""; });
       if (kind === "tag") working.items.forEach((item) => { item.tagIds = item.tagIds.filter((id) => id !== entry.id); });
-      const collection = kind === "type" ? working.types : working.tags;
+      const collection = { type: working.types, tagGroup: working.tagGroups, tag: working.tags }[kind];
       collection.splice(collection.findIndex(({ id }) => id === entry.id), 1);
       rerender();
     }}));
-    return element("div", { className: "taxonomy-row" }, children);
+    return element("div", { className: `taxonomy-row taxonomy-row-${kind}` }, children);
   }
 
   resetResolver() {

@@ -4,7 +4,7 @@ import { GitHubContentsStore } from "../js/github-store.js";
 
 const source = { owner: "owner", repo: "repo", branch: "main", dataPath: "data/tools.json", thumbnailDirectory: "assets/thumbnails" };
 const now = "2026-08-28T12:00:00.000Z";
-const data = { version: 1, updatedAt: now, types: [], tags: [], items: [] };
+const data = { version: 1, updatedAt: now, types: [], tagGroups: [], tags: [], items: [] };
 
 function asBase64(value) {
   return Buffer.from(value, "utf8").toString("base64");

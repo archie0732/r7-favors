@@ -2,14 +2,39 @@
   "version": 1,
   "updatedAt": "2026-08-28T12:00:00.000Z",
   "types": [
-    { "id": "video", "name": "影片", "color": "#e0523f" },
-    { "id": "web-tool", "name": "網頁工具", "color": "#2f6f68" },
-    { "id": "reference", "name": "參考資料", "color": "#8568a6" }
+    {
+      "id": "video",
+      "name": "影片",
+      "color": "#e0523f"
+    },
+    {
+      "id": "web-tool",
+      "name": "網頁工具",
+      "color": "#2f6f68"
+    },
+    {
+      "id": "reference",
+      "name": "參考資料",
+      "color": "#8568a6"
+    }
   ],
+  "tagGroups": [],
   "tags": [
-    { "id": "ai", "name": "AI" },
-    { "id": "design", "name": "設計" },
-    { "id": "productivity", "name": "生產力" }
+    {
+      "id": "ai",
+      "name": "AI",
+      "groupId": ""
+    },
+    {
+      "id": "design",
+      "name": "設計",
+      "groupId": ""
+    },
+    {
+      "id": "productivity",
+      "name": "生產力",
+      "groupId": ""
+    }
   ],
   "items": [
     {
@@ -17,9 +42,14 @@
       "title": "範例工具",
       "url": "https://example.com/",
       "description": "這是公開資料的示範卡片。完成 config.js 設定後，網站會改由 GitHub API 載入 Repository 內容。",
-      "thumbnail": { "kind": "default", "value": "" },
+      "thumbnail": {
+        "kind": "default",
+        "value": ""
+      },
       "typeId": "web-tool",
-      "tagIds": ["productivity"],
+      "tagIds": [
+        "productivity"
+      ],
       "favorite": true,
       "createdAt": "2026-08-28T12:00:00.000Z",
       "updatedAt": "2026-08-28T12:00:00.000Z"

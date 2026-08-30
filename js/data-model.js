@@ -92,7 +92,14 @@ export function normalizeToolboxData(raw) {
   if (raw.version !== 1) issues.push("version 必須是 1");
   if (!validIso(raw.updatedAt)) issues.push("updatedAt 必須是有效的 ISO 8601 時間");
   const types = normalizeTaxonomy(raw.types, "types", issues);
-  const tags = normalizeTaxonomy(raw.tags, "tags", issues);
+  // 標籤分類是後來才加的，舊資料檔沒有這個欄位時視為「全部未分類」。
+  const tagGroups = normalizeTaxonomy(raw.tagGroups ?? [], "tagGroups", issues);
+  const groupIds = new Set(tagGroups.map(({ id }) => id));
+  const tags = normalizeTaxonomy(raw.tags, "tags", issues).map((tag, index) => {
+    const groupId = cleanText(raw.tags?.[index]?.groupId);
+    if (groupId && !groupIds.has(groupId)) issues.push(`tags[${index}].groupId 找不到對應標籤分類：${groupId}`);
+    return { ...tag, groupId: groupIds.has(groupId) ? groupId : "" };
+  });
   const typeIds = new Set(types.map(({ id }) => id));
   const tagIds = new Set(tags.map(({ id }) => id));
   const seenItemIds = new Set();
@@ -134,14 +141,24 @@ export function normalizeToolboxData(raw) {
     version: 1,
     updatedAt: normalizeIso(raw.updatedAt),
     types,
+    tagGroups,
     tags,
     items
   };
 }
 
+// 依標籤分類把標籤排好；沒有分類的標籤集中在最後一組，方便篩選列與編輯器共用同一份順序。
+export function groupedTags(data, { includeEmpty = false, ungroupedName = "未分類" } = {}) {
+  const groups = (data.tagGroups ?? []).map((group) => ({ group, tags: [] }));
+  const byId = new Map(groups.map((entry) => [entry.group.id, entry]));
+  const ungrouped = { group: { id: "", name: ungroupedName }, tags: [] };
+  for (const tag of data.tags) (byId.get(tag.groupId) ?? ungrouped).tags.push(tag);
+  return [...groups, ungrouped].filter((entry) => includeEmpty || entry.tags.length);
+}
+
 export function createEmptyData() {
   const now = new Date().toISOString();
-  return { version: 1, updatedAt: now, types: [], tags: [], items: [] };
+  return { version: 1, updatedAt: now, types: [], tagGroups: [], tags: [], items: [] };
 }
 
 export function createStarterData() {
@@ -154,6 +171,7 @@ export function createStarterData() {
       { id: "reference", name: "參考資料", color: "#8568a6" },
       { id: "video", name: "影片", color: "#e0523f" }
     ],
+    tagGroups: [],
     tags: [
       { id: "important", name: "重要" },
       { id: "work", name: "工作" },
@@ -169,6 +187,7 @@ export function validateItemDraft(draft, data) {
     version: 1,
     updatedAt: now,
     types: data.types,
+    tagGroups: data.tagGroups ?? [],
     tags: data.tags,
     items: [{
       id: draft.id || crypto.randomUUID(),

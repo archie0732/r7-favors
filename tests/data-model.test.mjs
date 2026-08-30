@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createStarterData, DataValidationError, normalizeToolboxData, upsertItem } from "../js/data-model.js";
+import { createStarterData, DataValidationError, groupedTags, normalizeToolboxData, upsertItem } from "../js/data-model.js";
 
 const now = "2026-08-28T12:00:00.000Z";
 
@@ -65,4 +65,26 @@ test("starter data contains useful defaults without private items", () => {
   assert.equal(starter.tags.length, 3);
   assert.deepEqual(starter.items, []);
   assert.doesNotThrow(() => normalizeToolboxData(starter));
+});
+
+test("older data files without tag groups stay valid", () => {
+  const result = normalizeToolboxData(validData());
+  assert.deepEqual(result.tagGroups, []);
+  assert.equal(result.tags[0].groupId, "");
+});
+
+test("rejects tags pointing at a missing tag group", () => {
+  const data = validData();
+  data.tags[0].groupId = "missing";
+  assert.throws(() => normalizeToolboxData(data), /找不到對應標籤分類/);
+});
+
+test("groups tags by tag group and keeps ungrouped ones last", () => {
+  const data = validData();
+  data.tagGroups = [{ id: "series", name: "系列" }];
+  data.tags = [{ id: "loose", name: "未歸類" }, { id: "ai", name: "AI", groupId: "series" }];
+  const groups = groupedTags(normalizeToolboxData(data), { ungroupedName: "其它標籤" });
+  assert.deepEqual(groups.map(({ group }) => group.name), ["系列", "其它標籤"]);
+  assert.deepEqual(groups[0].tags.map(({ id }) => id), ["ai"]);
+  assert.deepEqual(groups[1].tags.map(({ id }) => id), ["loose"]);
 });
