@@ -323,20 +323,33 @@ export class ToolboxApp {
       groupList.replaceChildren(...working.tagGroups.map((group) => this.taxonomyRow(group, "tagGroup", working, renderLists, error)));
       tagList.replaceChildren(...working.tags.map((tag) => this.taxonomyRow(tag, "tag", working, renderLists, error)));
     };
+    // 新增一列之後直接把游標移進去並選起預設名稱，接著打字就是重新命名。
+    const focusRow = (list, id) => {
+      const input = list.querySelector(`input[data-taxonomy-id="${CSS.escape(id)}"]`);
+      if (!input) return;
+      input.scrollIntoView({ block: "nearest" });
+      input.select();
+    };
     const addType = button("＋ 新增類型", "button button-quiet", { onclick: () => {
       const name = `新類型 ${working.types.length + 1}`;
-      working.types.push({ id: createTaxonomyId(name, working.types), name, color: "#2f6f68" });
+      const id = createTaxonomyId(name, working.types);
+      working.types.push({ id, name, color: "#2f6f68" });
       renderLists();
+      focusRow(typeList, id);
     }});
     const addGroup = button("＋ 新增標籤分類", "button button-quiet", { onclick: () => {
       const name = `新分類 ${working.tagGroups.length + 1}`;
-      working.tagGroups.push({ id: createTaxonomyId(name, working.tagGroups), name });
+      const id = createTaxonomyId(name, working.tagGroups);
+      working.tagGroups.push({ id, name });
       renderLists();
+      focusRow(groupList, id);
     }});
     const addTag = button("＋ 新增標籤", "button button-quiet", { onclick: () => {
       const name = `新標籤 ${working.tags.length + 1}`;
-      working.tags.push({ id: createTaxonomyId(name, working.tags), name, groupId: working.tagGroups[0]?.id ?? "" });
+      const id = createTaxonomyId(name, working.tags);
+      working.tags.push({ id, name, groupId: working.tagGroups[0]?.id ?? "" });
       renderLists();
+      focusRow(tagList, id);
     }});
     const submit = button("儲存分類設定", "button button-primary", { type: "submit" });
     form.append(
@@ -372,7 +385,7 @@ export class ToolboxApp {
 
   taxonomyRow(entry, kind, working, rerender, error) {
     const label = { type: "類型", tagGroup: "標籤分類", tag: "標籤" }[kind];
-    const input = element("input", { type: "text", maxlength: 60, value: entry.name, "aria-label": `${label}名稱` });
+    const input = element("input", { type: "text", maxlength: 60, value: entry.name, "aria-label": `${label}名稱`, dataset: { taxonomyId: entry.id } });
     input.addEventListener("input", () => { entry.name = input.value; });
     const children = [input];
     if (kind === "type") {
