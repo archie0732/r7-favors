@@ -32,6 +32,15 @@ test("loads and normalizes valid toolbox data", () => {
   assert.equal(result.types[0].color, "#3b82f6");
 });
 
+test("defaults the watch-later flag on older data and keeps it when set", () => {
+  const data = validData();
+  assert.equal(normalizeToolboxData(data).items[0].watchLater, false);
+  data.items[0].watchLater = true;
+  assert.equal(normalizeToolboxData(data).items[0].watchLater, true);
+  data.items[0].watchLater = "yes";
+  assert.throws(() => normalizeToolboxData(data), /watchLater 必須是布林值/);
+});
+
 test("rejects unsafe item URLs", () => {
   const data = validData();
   data.items[0].url = "javascript:alert(1)";

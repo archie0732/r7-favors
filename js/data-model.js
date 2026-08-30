@@ -121,6 +121,8 @@ export function normalizeToolboxData(raw) {
     if (Array.isArray(item?.tagIds) && itemTagIds.length !== item.tagIds.length) issues.push(`${path}.tagIds 不可重複`);
     itemTagIds.forEach((tagId) => { if (!tagIds.has(tagId)) issues.push(`${path}.tagIds 包含不存在的標籤：${tagId}`); });
     if (typeof item?.favorite !== "boolean") issues.push(`${path}.favorite 必須是布林值`);
+    // 「稍後再看」是後來才加的欄位，舊資料沒有這個鍵時當作 false，只有填了錯型別才報錯。
+    if (item?.watchLater !== undefined && typeof item.watchLater !== "boolean") issues.push(`${path}.watchLater 必須是布林值`);
     if (!validIso(item?.createdAt)) issues.push(`${path}.createdAt 必須是有效時間`);
     if (!validIso(item?.updatedAt)) issues.push(`${path}.updatedAt 必須是有效時間`);
     return {
@@ -132,6 +134,7 @@ export function normalizeToolboxData(raw) {
       typeId,
       tagIds: itemTagIds,
       favorite: item?.favorite === true,
+      watchLater: item?.watchLater === true,
       createdAt: validIso(item?.createdAt) ? normalizeIso(item.createdAt) : cleanText(item?.createdAt),
       updatedAt: validIso(item?.updatedAt) ? normalizeIso(item.updatedAt) : cleanText(item?.updatedAt)
     };
@@ -198,6 +201,7 @@ export function validateItemDraft(draft, data) {
       typeId: draft.typeId,
       tagIds: draft.tagIds || [],
       favorite: draft.favorite === true,
+      watchLater: draft.watchLater === true,
       createdAt: draft.createdAt || now,
       updatedAt: now
     }]

@@ -13,7 +13,7 @@ export class ToolboxApp {
     this.data = null;
     this.sha = "";
     this.admin = privateMode;
-    this.filters = { query: "", typeId: "", tagId: "", favorite: false };
+    this.filters = { query: "", typeId: "", tagId: "", favorite: false, watchLater: false };
     this.status = byId("status-panel");
     this.grid = byId("card-grid");
     this.count = byId("visible-count");
@@ -21,6 +21,7 @@ export class ToolboxApp {
     this.tagFilters = byId("tag-filters");
     this.searchInput = byId("search-input");
     this.favoriteFilter = byId("favorites-filter");
+    this.watchLaterFilter = byId("watch-later-filter");
     this.renderSequence = 0;
     this.resolver = new ThumbnailResolver({ source, store, privateMode });
     this.bindFilters();
@@ -39,11 +40,16 @@ export class ToolboxApp {
       this.filters.favorite = this.favoriteFilter.checked;
       this.renderItems();
     });
+    this.watchLaterFilter?.addEventListener("change", () => {
+      this.filters.watchLater = this.watchLaterFilter.checked;
+      this.renderItems();
+    });
     byId("clear-filters")?.addEventListener("click", () => {
-      this.filters = { query: "", typeId: "", tagId: "", favorite: false };
+      this.filters = { query: "", typeId: "", tagId: "", favorite: false, watchLater: false };
       this.searchInput.value = "";
       this.typeFilter.value = "";
       this.favoriteFilter.checked = false;
+      if (this.watchLaterFilter) this.watchLaterFilter.checked = false;
       this.renderFilterOptions();
       this.renderItems();
     });
@@ -171,6 +177,7 @@ export class ToolboxApp {
     const image = element("img", { className: "card-thumbnail", alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" });
     image.addEventListener("error", () => { if (image.src !== this.resolver.defaultUrl) image.src = this.resolver.defaultUrl; }, { once: true });
     const meta = element("div", { className: "card-meta" }, [
+      item.watchLater ? element("span", { className: "watch-later-mark", text: "稍後再看" }) : null,
       element("span", { className: "type-label", text: type?.name ?? "未分類", style: { "--type-color": type?.color ?? "#68716c" } }),
       element("span", { className: "favorite-mark", title: item.favorite ? "已收藏" : "", text: item.favorite ? "★" : "" })
     ]);
@@ -179,7 +186,7 @@ export class ToolboxApp {
     const tagLine = element("div", { className: "card-tags" }, tags.map((tag) => element("span", { text: `#${tag.name}` })));
     const footer = element("div", { className: "card-footer" }, [element("span", { text: `更新於 ${formatDate(item.updatedAt)}` }), element("span", { text: "↗" })]);
     const body = element("div", { className: "card-body" }, [meta, element("h2", {}, link), description, tagLine, footer]);
-    const card = element("article", { className: "tool-card" }, [image, body]);
+    const card = element("article", { className: `tool-card${item.watchLater ? " is-watch-later" : ""}` }, [image, body]);
     if (this.admin) {
       card.append(element("div", { className: "card-admin" }, [
         button("編輯", "mini-button", { onclick: () => this.openItemEditor(item) }),
@@ -205,6 +212,8 @@ export class ToolboxApp {
     typeSelect.value = item?.typeId || this.data.types[0].id;
     const favoriteInput = element("input", { name: "favorite", type: "checkbox" });
     favoriteInput.checked = item?.favorite === true;
+    const watchLaterInput = element("input", { name: "watchLater", type: "checkbox" });
+    watchLaterInput.checked = item?.watchLater === true;
     const tags = element("div", { className: "choice-groups" }, groupedTags(this.data, { ungroupedName: "其它標籤" }).map(({ group, tags: groupTags }) =>
       element("div", { className: "choice-group" }, [
         element("span", { className: "tag-group-label", text: group.name }),
@@ -238,7 +247,13 @@ export class ToolboxApp {
       element("h2", { text: item ? "編輯收藏" : "新增收藏" }),
       element("div", { className: "form-grid" }, [formField("標題", titleInput), formField("網址", urlInput)]),
       formField("說明", descriptionInput, `${DATA_LIMITS.description} 字以內`),
-      element("div", { className: "form-grid" }, [formField("類型", typeSelect), element("label", { className: "checkbox-field favorite-field" }, [favoriteInput, element("span", { text: "標示為收藏" })])]),
+      element("div", { className: "form-grid" }, [
+        formField("類型", typeSelect),
+        element("div", { className: "flag-fields" }, [
+          element("label", { className: "checkbox-field favorite-field" }, [favoriteInput, element("span", { text: "標示為收藏" })]),
+          element("label", { className: "checkbox-field favorite-field" }, [watchLaterInput, element("span", { text: "標示為稍後再看（置頂）" })])
+        ])
+      ]),
       element("fieldset", { className: "form-fieldset" }, [element("legend", { text: "標籤（可複選）" }), tags]),
       formField("縮圖來源", thumbnailMode), urlField, fileField, error,
       element("div", { className: "dialog-actions" }, [button("取消", "button button-quiet", { onclick: () => dialog.close() }), submit])
@@ -267,6 +282,7 @@ export class ToolboxApp {
           typeId: typeSelect.value,
           tagIds: [...tags.querySelectorAll("input:checked")].map((input) => input.value),
           favorite: favoriteInput.checked,
+          watchLater: watchLaterInput.checked,
           thumbnail
         };
         const nextData = upsertItem(this.data, draft);
@@ -427,7 +443,7 @@ export class ToolboxApp {
     this.renderSequence += 1;
     this.data = null;
     this.sha = "";
-    this.filters = { query: "", typeId: "", tagId: "", favorite: false };
+    this.filters = { query: "", typeId: "", tagId: "", favorite: false, watchLater: false };
     this.grid?.replaceChildren();
     if (this.grid) this.grid.hidden = true;
     this.status?.replaceChildren();
@@ -436,6 +452,7 @@ export class ToolboxApp {
     this.typeFilter?.replaceChildren(element("option", { value: "", text: "所有類型" }));
     if (this.searchInput) this.searchInput.value = "";
     if (this.favoriteFilter) this.favoriteFilter.checked = false;
+    if (this.watchLaterFilter) this.watchLaterFilter.checked = false;
     if (this.count) this.count.textContent = "—";
     this.resetResolver();
   }
