@@ -40,15 +40,37 @@
           <button class="button button-light" type="submit">解鎖私人連結庫</button>
         </form>
         <details class="gate-help">
-          <summary>第一次連接私人 Repository？看設定教學</summary>
-          <ol>
-            <li><strong>建立 Private Repository。</strong>在 GitHub 按 <a href="https://github.com/new" target="_blank" rel="noopener noreferrer">New repository ↗</a>，Visibility 選 <code>Private</code>，並勾選 Add a README file，讓 <code>main</code> branch 先存在。網站只會存取這個 Repository，不會替你建立它。</li>
-            <li><strong>建立最小權限 Token。</strong>用 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained personal access token ↗</a>：Resource owner 選你的帳號；Repository access 選 <code>Only select repositories</code> 並勾選這個私人庫；Repository permissions → <code>Contents</code> 依用途設為 <code>Read-only</code>（只瀏覽）或 <code>Read and write</code>（新增、修改、上傳縮圖）。其他權限保持預設。不要使用 SSH public key 或 GitHub 密碼。</li>
-            <li><strong>填入 Repository。</strong>上方欄位可貼 <code>owner/repo</code>、<code>https://github.com/owner/repo</code>，或 <code>https://github.com/owner/repo/tree/branch</code> 指定其他 branch。不需要編輯 <code>config.js</code>。</li>
-            <li><strong>解鎖並建立資料檔。</strong>貼上 Token 後按解鎖。若該 Repository 還沒有設定中指定的資料 JSON，網站會顯示「建立預設 JSON」（實際路徑會顯示在該畫面上），按一下即可建立含預設類型與標籤的空白資料。</li>
-            <li><strong>下次更快。</strong>解鎖成功後網址會補上 <code>?repo=owner/repo</code>，加入書籤即可自動帶入目標；要換另一個私人庫，直接改上方欄位就好。</li>
-          </ol>
-          <p>常見錯誤：出現「找不到 owner/repo」通常是 Token 的 Only select repositories 沒有包含它，而不是網路問題；出現「沒有必要權限」請把 Contents 調成 Read and write。</p>
+          <summary><span class="gate-help-title">第一次連接私人 Repository？</span><span class="gate-help-hint">設定教學</span></summary>
+          <div class="gate-help-body">
+            <ol class="gate-steps">
+              <li>
+                <h2>建立 Private Repository</h2>
+                <p>Visibility 選 <code>Private</code>，並勾選 Add a README file，讓 <code>main</code> branch 先存在。</p>
+                <a href="https://github.com/new" target="_blank" rel="noopener noreferrer">New repository ↗</a>
+              </li>
+              <li>
+                <h2>建立最小權限 Token</h2>
+                <p>Repository access 選 <code>Only select repositories</code> 並勾選這個庫；Repository permissions → <code>Contents</code> 選 <code>Read-only</code> 或 <code>Read and write</code>。</p>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained token ↗</a>
+              </li>
+              <li>
+                <h2>貼上 Repository 與 Token</h2>
+                <p>上方欄位接受 <code>owner/repo</code>、完整 GitHub 網址，或 <code>…/tree/branch</code> 指定分支。不需要編輯 <code>config.js</code>。</p>
+              </li>
+              <li>
+                <h2>建立第一份資料</h2>
+                <p>資料檔還不存在時，解鎖後會出現「建立預設 JSON」，按一下即可建立，路徑顯示在該畫面上。</p>
+              </li>
+              <li>
+                <h2>下次更快</h2>
+                <p>解鎖成功後網址會補上 <code>?repo=owner/repo</code>，加入書籤即可自動帶入；換一個私人庫只要改上方欄位。</p>
+              </li>
+            </ol>
+            <dl class="gate-troubles">
+              <div><dt>找不到 owner/repo</dt><dd>Token 的 Only select repositories 沒有包含它，不是網路問題。</dd></div>
+              <div><dt>沒有必要權限</dt><dd>把 Contents 從 Read-only 調成 Read and write。</dd></div>
+            </dl>
+          </div>
         </details>
         <p class="security-note">Repository 必須先在 GitHub 建立；本頁會存取該 Repository，並可建立其中的資料 JSON，但不會建立 Repository 本身。</p>
       </section>
