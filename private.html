@@ -32,9 +32,10 @@
         <h1 id="private-title">你的連結，只在取得授權後載入。</h1>
         <p>此頁不包含私人 JSON，也不會用 CSS 把資料藏起來。驗證前，瀏覽器不會向私人 Repository 要求任何內容。</p>
         <form class="gate-form" id="private-token-form">
+          <label class="form-field"><span>私人 Repository（貼上連結或 owner/repo）</span><input id="private-repo-input" type="text" autocomplete="off" spellcheck="false" required placeholder="https://github.com/owner/private-repo"></label>
           <p class="repo-path repo-path-light"><span>目前目標</span><code id="private-repo-target"></code></p>
           <label class="form-field"><span>Fine-grained personal access token（不是 SSH public key）</span><input id="private-token-input" type="password" autocomplete="off" spellcheck="false" required placeholder="github_pat_…"></label>
-          <label class="checkbox-field checkbox-field-light"><input id="private-remember-token" type="checkbox"><span>在此分頁期間暫存</span></label>
+          <label class="checkbox-field checkbox-field-light"><input id="private-remember-token" type="checkbox"><span>在此分頁期間暫存 Token 與 Repository</span></label>
           <p class="form-error" id="private-token-error" role="alert"></p>
           <button class="button button-light" type="submit">解鎖私人連結庫</button>
         </form>

@@ -71,9 +71,17 @@ Repository 名稱與資料路徑不是密鑰，可以放在公開設定。**絕�
 2. 例如命名為 `private-toolbox-data`。
 3. Visibility 選 **Private**。
 4. 勾選 **Add a README file**，讓 Repository 先建立 `main` branch。
-5. 建立 Repository，然後把名稱填回公開 Fork 的 `config.js`。
+5. 建立 Repository。名稱不必寫進 `config.js`：私人頁的解鎖表單可以直接貼上 Repository 連結。
 
-網站不會建立 Private Repository 本身。它只會依 `config.js` 的 `owner`、`repo`、`branch` 與 `dataPath` 存取已存在且已授權的 Repository。
+私人頁的 **私人 Repository** 欄位接受下列任一格式：
+
+- `owner/private-toolbox-data`
+- `https://github.com/owner/private-toolbox-data`
+- `https://github.com/owner/private-toolbox-data/tree/<branch>`（同時指定 branch）
+
+勾選「在此分頁期間暫存」會連同 Repository 一起記在該分頁；解鎖成功後網址會補上 `?repo=owner/repo`，可直接加入書籤。`config.js` 的 `privateSource` 仍可保留，作為預設值。
+
+網站不會建立 Private Repository 本身。它只會依你輸入（或 `config.js` 預設）的 `owner`、`repo`、`branch` 與 `dataPath` 存取已存在且已授權的 Repository。
 
 不必手動建立 `data/private-links.json`。首次開啟私人頁、輸入具寫入權限的 Token 後，按 **建立預設 JSON**，網站會在 `privateSource.dataPath` 指定的位置建立：
 

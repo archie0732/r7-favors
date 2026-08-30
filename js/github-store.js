@@ -50,7 +50,9 @@ export class GitHubContentsStore {
   constructor(source, token = "", fetchImpl = globalThis.fetch) {
     this.source = source;
     this.token = token.trim();
-    this.fetchImpl = fetchImpl;
+    // fetch() must keep its global receiver; storing it unbound makes browsers
+    // throw "Illegal invocation" on every call.
+    this.fetchImpl = typeof fetchImpl === "function" ? fetchImpl.bind(globalThis) : fetchImpl;
   }
 
   setToken(token) {
@@ -70,8 +72,9 @@ export class GitHubContentsStore {
     let response;
     try {
       response = await this.fetchImpl(url, { ...options, headers, referrerPolicy: "no-referrer" });
-    } catch {
-      throw new GitHubApiError("瀏覽器無法連線 api.github.com；這不是 Repository 404。請檢查網路、代理、DNS 或擴充套件是否封鎖 GitHub API。", 0, "network_error");
+    } catch (error) {
+      const detail = error instanceof Error && error.message ? `（${error.message}）` : "";
+      throw new GitHubApiError(`瀏覽器無法連線 api.github.com；這不是 Repository 404。請檢查網路、代理、DNS 或擴充套件是否封鎖 GitHub API。${detail}`, 0, "network_error");
     }
     const text = response.status === 204 ? "" : await response.text();
     let payload = null;
