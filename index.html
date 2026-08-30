@@ -73,7 +73,7 @@
           <article class="guide-card">
             <span class="step-number">01</span>
             <h3>複製並設定 Repository</h3>
-            <p>Fork 這個專案後，編輯 <code>config.js</code>，將 owner、Repository 名稱、branch 與資料路徑換成自己的設定。</p>
+            <p>Fork 這個專案後，編輯 <code>config.js</code> 的 <code>publicSource</code>，換成自己的 owner、Repository 名稱、branch 與資料路徑。私人庫不必寫進設定檔。</p>
             <a href="https://github.com/archie0732/r7-favors/fork" target="_blank" rel="noopener noreferrer">Fork 這個工具庫 ↗</a>
           </article>
           <article class="guide-card guide-card-accent">
@@ -85,7 +85,7 @@
           <article class="guide-card">
             <span class="step-number">03</span>
             <h3>從頁面新增連結</h3>
-            <p>公開頁按「管理」；私人頁先解鎖。驗證 Token 後按「新增項目」，填入標題、網址、類型、標籤與縮圖，再儲存。</p>
+            <p>公開頁按「管理」；私人頁在解鎖表單直接貼上私人 Repository 連結與 Token。驗證後按「新增項目」，填入標題、網址、類型、標籤與縮圖，再儲存。</p>
             <button class="text-button" type="button" data-open-admin>開啟管理入口 →</button>
           </article>
         </div>
@@ -107,9 +107,9 @@
           <summary>第一次設定的完整檢查清單</summary>
           <ol>
             <li>建立公開 Fork，並在 <code>config.js</code> 設定 <code>publicSource</code>。</li>
-            <li>另外建立 Private Repository，在 <code>privateSource</code> 填入名稱與 <code>data/private-links.json</code>。</li>
+            <li>另外建立 Private Repository。在私人頁的解鎖表單貼上它的連結（<code>owner/repo</code> 或 GitHub 網址）即可連接；<code>config.js</code> 的 <code>privateSource</code> 只是預設值，可留空。</li>
             <li>建立只授權指定 Repository 的 Fine-grained token；需要編輯時將 Contents 設為 Read and write。</li>
-            <li>開啟私人頁並輸入 Token；資料檔不存在時，按「建立預設 JSON」。</li>
+            <li>開啟<a href="./private.html">私人頁</a>，貼上 Repository 與 Token；資料檔不存在時，按「建立預設 JSON」。頁面內的「第一次連接私人 Repository？」有完整步驟。</li>
             <li>到 Settings → Actions → General 允許 Actions，再到 Settings → Pages 選擇 <code>main</code> 與 <code>/(root)</code>。</li>
           </ol>
           <p class="guide-warning"><strong>不要：</strong>把 Token 放進 config.js、網址、README 或任何 commit，也不要把私人 JSON 放進公開 Fork。</p>
