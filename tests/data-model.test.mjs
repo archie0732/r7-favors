@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DataValidationError, normalizeToolboxData, upsertItem } from "../js/data-model.js";
+import { createStarterData, DataValidationError, normalizeToolboxData, upsertItem } from "../js/data-model.js";
 
 const now = "2026-08-28T12:00:00.000Z";
 
@@ -56,4 +56,13 @@ test("upsert preserves createdAt and updates editable fields", () => {
   const result = upsertItem(data, { ...data.items[0], title: "新標題" });
   assert.equal(result.items[0].title, "新標題");
   assert.equal(result.items[0].createdAt, now);
+});
+
+test("starter data contains useful defaults without private items", () => {
+  const starter = createStarterData();
+  assert.equal(starter.version, 1);
+  assert.equal(starter.types.length, 3);
+  assert.equal(starter.tags.length, 3);
+  assert.deepEqual(starter.items, []);
+  assert.doesNotThrow(() => normalizeToolboxData(starter));
 });

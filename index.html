@@ -20,6 +20,7 @@
       <nav class="site-nav" aria-label="主要導覽">
         <a class="is-current" href="./index.html" aria-current="page">公開工具箱</a>
         <a href="./private.html">私人連結庫</a>
+        <a href="#guide">使用指南</a>
       </nav>
       <button class="button button-quiet" id="admin-button" type="button">管理</button>
     </header>
@@ -57,6 +58,62 @@
           <p>正在整理工具箱…</p>
         </div>
         <div class="card-grid" id="card-grid" hidden></div>
+      </section>
+
+      <section class="setup-guide" id="guide" aria-labelledby="guide-title">
+        <div class="guide-heading">
+          <div>
+            <p class="eyebrow">MAKE IT YOURS</p>
+            <h2 id="guide-title">三步建立自己的工具庫。</h2>
+          </div>
+          <p>公開網站放程式與公開收藏，私人資料放在另一個 Private Repository。兩者由最小權限 Token 安全連接。</p>
+        </div>
+
+        <div class="guide-grid">
+          <article class="guide-card">
+            <span class="step-number">01</span>
+            <h3>複製並設定 Repository</h3>
+            <p>Fork 這個專案後，編輯 <code>config.js</code>，將 owner、Repository 名稱、branch 與資料路徑換成自己的設定。</p>
+            <a href="https://github.com/archie0732/r7-favors/fork" target="_blank" rel="noopener noreferrer">Fork 這個工具庫 ↗</a>
+          </article>
+          <article class="guide-card guide-card-accent">
+            <span class="step-number">02</span>
+            <h3>建立最小權限 Token</h3>
+            <p>使用 Fine-grained personal access token，只選公開工具庫與私人資料庫；Repository permissions 的 Contents 依用途設定。</p>
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">建立 Fine-grained token ↗</a>
+          </article>
+          <article class="guide-card">
+            <span class="step-number">03</span>
+            <h3>從頁面新增連結</h3>
+            <p>公開頁按「管理」；私人頁先解鎖。驗證 Token 後按「新增項目」，填入標題、網址、類型、標籤與縮圖，再儲存。</p>
+            <button class="text-button" type="button" data-open-admin>開啟管理入口 →</button>
+          </article>
+        </div>
+
+        <div class="permission-panel">
+          <div>
+            <p class="eyebrow">REPOSITORY ACCESS</p>
+            <h3>Token 權限怎麼選？</h3>
+            <p>Metadata 的 Read 權限由 GitHub 自動提供。這個網站只需要 Contents，不需要 Actions、Administration 或帳號密碼。</p>
+          </div>
+          <div class="permission-list" role="list">
+            <div role="listitem"><span>公開瀏覽</span><strong>不需要 Token</strong></div>
+            <div role="listitem"><span>私人瀏覽</span><strong>Contents · Read-only</strong></div>
+            <div role="listitem"><span>新增／修改／縮圖</span><strong>Contents · Read and write</strong></div>
+          </div>
+        </div>
+
+        <details class="guide-details">
+          <summary>第一次設定的完整檢查清單</summary>
+          <ol>
+            <li>建立公開 Fork，並在 <code>config.js</code> 設定 <code>publicSource</code>。</li>
+            <li>另外建立 Private Repository，在 <code>privateSource</code> 填入名稱與 <code>data/private-links.json</code>。</li>
+            <li>建立只授權指定 Repository 的 Fine-grained token；需要編輯時將 Contents 設為 Read and write。</li>
+            <li>開啟私人頁並輸入 Token；資料檔不存在時，按「建立預設 JSON」。</li>
+            <li>到 Settings → Actions → General 允許 Actions，再到 Settings → Pages 選擇 <code>main</code> 與 <code>/(root)</code>。</li>
+          </ol>
+          <p class="guide-warning"><strong>不要：</strong>把 Token 放進 config.js、網址、README 或任何 commit，也不要把私人 JSON 放進公開 Fork。</p>
+        </details>
       </section>
     </main>
 

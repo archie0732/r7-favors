@@ -19,7 +19,17 @@ test("loads UTF-8 JSON through the Contents API", async () => {
   const store = new GitHubContentsStore(source, "secret-value", mockFetch);
   const result = await store.loadData();
   assert.equal(result.sha, "abc");
+  assert.equal(result.exists, true);
   assert.deepEqual(result.data, data);
+});
+
+test("reports a missing data file so the UI can initialize it", async () => {
+  const mockFetch = async () => new Response(JSON.stringify({ message: "Not Found" }), { status: 404 });
+  const store = new GitHubContentsStore(source, "token", mockFetch);
+  const result = await store.loadData({ allowMissing: true });
+  assert.equal(result.exists, false);
+  assert.equal(result.sha, "");
+  assert.deepEqual(result.data.items, []);
 });
 
 test("writes normalized JSON with branch and SHA", async () => {
@@ -34,6 +44,7 @@ test("writes normalized JSON with branch and SHA", async () => {
   const store = new GitHubContentsStore(source, "token", mockFetch);
   const result = await store.saveData(data, "old-sha");
   assert.equal(result.sha, "new-sha");
+  assert.equal(result.exists, true);
 });
 
 test("turns conflicts into an understandable error", async () => {

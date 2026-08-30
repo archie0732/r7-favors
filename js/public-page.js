@@ -62,6 +62,11 @@ adminButton.addEventListener("click", () => {
   tokenInput.focus();
 });
 
+document.querySelector("[data-open-admin]")?.addEventListener("click", () => {
+  adminButton.click();
+  if (app.admin) byId("admin-bar")?.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
 tokenForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const token = tokenInput.value.trim();

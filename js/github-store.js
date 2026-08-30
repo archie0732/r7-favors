@@ -112,14 +112,14 @@ export class GitHubContentsStore {
 
   async loadData({ allowMissing = false } = {}) {
     const file = await this.readFile(this.source.dataPath, { allowMissing });
-    if (!file) return { data: createEmptyData(), sha: "" };
+    if (!file) return { data: createEmptyData(), sha: "", exists: false };
     let raw;
     try {
       raw = JSON.parse(new TextDecoder().decode(file.bytes));
     } catch {
       throw new GitHubApiError("資料檔不是有效的 UTF-8 JSON。", 422, "invalid_json");
     }
-    return { data: normalizeToolboxData(raw), sha: file.sha };
+    return { data: normalizeToolboxData(raw), sha: file.sha, exists: true };
   }
 
   async saveData(data, sha, message = "Update toolbox data") {
@@ -132,7 +132,7 @@ export class GitHubContentsStore {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
-    return { data: normalized, sha: payload?.content?.sha || "" };
+    return { data: normalized, sha: payload?.content?.sha || "", exists: true };
   }
 
   async uploadBytes(path, bytes, message = "Upload toolbox thumbnail") {

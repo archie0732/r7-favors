@@ -144,6 +144,25 @@ export function createEmptyData() {
   return { version: 1, updatedAt: now, types: [], tags: [], items: [] };
 }
 
+export function createStarterData() {
+  const now = new Date().toISOString();
+  return normalizeToolboxData({
+    version: 1,
+    updatedAt: now,
+    types: [
+      { id: "web-tool", name: "網頁工具", color: "#2f6f68" },
+      { id: "reference", name: "參考資料", color: "#8568a6" },
+      { id: "video", name: "影片", color: "#e0523f" }
+    ],
+    tags: [
+      { id: "important", name: "重要" },
+      { id: "work", name: "工作" },
+      { id: "read-later", name: "稍後閱讀" }
+    ],
+    items: []
+  });
+}
+
 export function validateItemDraft(draft, data) {
   const now = new Date().toISOString();
   const synthetic = {

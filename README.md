@@ -1,108 +1,204 @@
-# R7 Favors 個人工具箱
+# R7 Favors：建立自己的 GitHub 工具庫
 
-一個可直接部署到 GitHub Pages 的雙頁個人工具箱。網站只使用 HTML、CSS 與原生 JavaScript ES Modules，不需要前端框架、後端、資料庫或建置流程。
+R7 Favors 是一個不需要後端、資料庫或前端框架的個人工具收藏庫。Fork 後即可用 GitHub Pages 免費發布；公開資料放在網站 Repository，私人資料則放在另一個 Private Repository，只有輸入 GitHub Token 後才會載入。
 
-- `index.html`：公開工具箱。訪客直接讀取此 Repository 由 GitHub Pages 提供的 `data/tools.json`；管理者驗證 Token 後，改由 GitHub Contents API 取得最新 SHA 並提交變更。
-- `private.html`：私人連結庫。未驗證前不會要求或顯示私人資料；解鎖後才使用 Token 呼叫另一個 Private Repository 的 Contents API。
-- 新增、修改、刪除項目，管理類型與標籤，搜尋／篩選／收藏排序，以及縮圖 URL 或 Repository 上傳。
-- JSON 載入時會完整驗證與正規化；寫入帶有 SHA，避免靜默覆蓋同時發生的修改。
+網站提供：
 
-## 1. 設定公開與私人 Repository
+- 公開工具箱與真正不預載資料的私人連結庫。
+- 搜尋、類型／標籤篩選與最愛排序。
+- 從頁面新增、修改、刪除連結及管理類型與標籤。
+- 預設縮圖、外部 HTTPS 圖片與 Repository 圖片上傳。
+- 私人資料檔不存在時，一鍵建立安全的預設 JSON。
+- GitHub SHA 衝突保護，避免覆蓋另一個工作階段的修改。
 
-編輯 [`config.js`](./config.js)。公開 Repository 已設定為本專案：
-
-```js
-publicSource: {
-  owner: "archie0732",
-  repo: "r7-favors",
-  branch: "main",
-  dataPath: "data/tools.json",
-  thumbnailDirectory: "assets/thumbnails"
-}
-```
-
-請把 `privateSource` 的預留值改成你建立的私人資料 Repository。Repository 名稱與路徑不是密鑰，可以出現在公開設定；Token 絕對不可放入 `config.js`。
-
-私人 Repository 建議結構：
+## 架構與安全邊界
 
 ```text
-private-toolbox-data/
-├─ data/
-│  └─ private-links.json
-└─ assets/
-   └─ thumbnails/
+你的公開 Fork（GitHub Pages）
+├─ HTML / CSS / JavaScript
+├─ config.js                    # Repository 名稱與路徑，沒有 Token
+├─ data/tools.json              # 公開收藏
+└─ assets/thumbnails/           # 公開縮圖
+
+你的 Private Repository
+├─ data/private-links.json      # 私人收藏
+└─ assets/thumbnails/           # 私人縮圖
 ```
 
-可把 `data/tools.json` 複製為初始 `data/private-links.json`，再清除 `items`。**不要**把真正的私人 JSON、私人縮圖或其副本加入本公開 Repository。
+公開 Repository 中的所有檔案都能被任何人讀取，所以私人 JSON 和私人縮圖絕對不能放進公開 Fork。私人頁在 Token 驗證前不會向 Private Repository 發出資料請求，也不會把私人資料打包在網站內。
 
-若私人資料檔尚未建立，具寫入權限的管理者仍可解鎖，先建立類型／標籤，再儲存第一筆資料；網站會透過 Contents API 建立 JSON 檔。
+## 第一步：Fork 這個專案
 
-## 2. 建立最小權限 Token
+1. 登入 GitHub，開啟 [R7 Favors Repository](https://github.com/archie0732/r7-favors)。
+2. 按右上角 **Fork**，或直接開啟 [Fork 頁面](https://github.com/archie0732/r7-favors/fork)。
+3. Owner 選自己的帳號，Repository name 可保留 `r7-favors` 或改成喜歡的名稱。
+4. 建立 Fork，並保持它為 **Public**，這樣 GitHub Free 才能使用 GitHub Pages。
 
-在 GitHub 建立 Fine-grained personal access token：
+Fork 會保留原專案的 commit 歷史。若你希望建立完全獨立、沒有上游關係的新專案，也可以下載程式後建立新的 Public Repository。
 
-1. Repository access 只選需要管理的公開或私人 Repository。
-2. Repository permissions → Contents：瀏覽只需 `Read-only`；新增、修改、刪除與上傳縮圖需 `Read and write`。
-3. 設定合理的到期日，並定期輪替。
+## 第二步：設定 `config.js`
 
-網站不接受 GitHub 帳號密碼。Token 只存在 JavaScript 記憶體；使用者主動勾選「在此分頁期間暫存」時才會放入 `sessionStorage`。它不會進入 `localStorage`、Cookie、網址、JSON、console log 或 Git commit。按「鎖定」會立即從記憶體與 `sessionStorage` 清除私人頁 Token。
+在自己的 Fork 開啟 [`config.js`](./config.js)，按鉛筆圖示編輯：
 
-如果同一個 Token 需要管理兩個 Repository，請只授權這兩個 Repository；更嚴格的作法是為公開與私人資料各建一個 Token。
+```js
+export const APP_CONFIG = Object.freeze({
+  publicSource: {
+    owner: "你的 GitHub 帳號",
+    repo: "你的公開 Fork 名稱",
+    branch: "main",
+    dataPath: "data/tools.json",
+    thumbnailDirectory: "assets/thumbnails"
+  },
+  privateSource: {
+    owner: "你的 GitHub 帳號",
+    repo: "你的 Private Repository 名稱",
+    branch: "main",
+    dataPath: "data/private-links.json",
+    thumbnailDirectory: "assets/thumbnails"
+  },
+  maxThumbnailBytes: 2 * 1024 * 1024,
+  allowedThumbnailTypes: ["image/jpeg", "image/png", "image/webp"]
+});
+```
 
-## 3. GitHub Pages 部署
+Repository 名稱與資料路徑不是密鑰，可以放在公開設定。**絕對不要把 GitHub Token 寫進 `config.js`。**
 
-本專案不需要 build：
+## 第三步：建立私人資料 Repository
 
-1. 將檔案推送到預設 branch。
-2. 到 Repository **Settings → Pages**。
-3. Source 選 **Deploy from a branch**，Branch 選 `main` 與 `/ (root)`。
-4. 等待 GitHub Pages 完成部署。
+若不需要私人連結庫，可以先保留 `privateSource` 的預留值。需要時：
 
-`.nojekyll` 已包含在根目錄。管理者透過 Contents API 提交公開 JSON 後，GitHub Pages 可能需要短暫時間才會更新訪客讀到的靜態檔；管理模式會立即顯示 API 回傳的新資料。
+1. 在 GitHub 右上角按 **＋ → New repository**。
+2. 例如命名為 `private-toolbox-data`。
+3. Visibility 選 **Private**。
+4. 勾選 **Add a README file**，讓 Repository 先建立 `main` branch。
+5. 建立 Repository，然後把名稱填回公開 Fork 的 `config.js`。
 
-如果 Repository 啟用了嚴格的 Content Security Policy，請保留對 `https://api.github.com` 與 `https://raw.githubusercontent.com` 的連線／圖片權限。
+不必手動建立 `data/private-links.json`。首次開啟私人頁、輸入具寫入權限的 Token 後，按 **建立預設 JSON**，網站會在 `privateSource.dataPath` 指定的位置建立：
 
-## 4. 本機開發與測試
+- 三個預設類型：網頁工具、參考資料、影片。
+- 三個預設標籤：重要、工作、稍後閱讀。
+- 空的 `items` 陣列，不含任何範例私人資料。
 
-瀏覽器 ES Modules 不能可靠地直接由 `file://` 開啟，請使用任一靜態伺服器。例如專案已附一個零相依伺服器：
+## 第四步：建立最小權限 GitHub Token
+
+建議使用 [Fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)，不要使用 GitHub 密碼，也不要優先使用 classic token。
+
+建立時：
+
+1. **Token name**：例如 `R7 Favors`。
+2. **Expiration**：選合理的到期日，之後定期輪替。
+3. **Resource owner**：選你的帳號。
+4. **Repository access**：選 **Only select repositories**。
+5. 只勾選你的公開 Fork 與 `private-toolbox-data`。
+6. **Repository permissions → Contents**：
+   - 只瀏覽私人資料：`Read-only`。
+   - 新增、修改、刪除資料或上傳縮圖：`Read and write`。
+7. 其他權限保持預設；Metadata 的 Read 權限會由 GitHub 自動提供。
+
+同一個 Token 可以授權兩個指定 Repository；若想要更嚴格，可為公開與私人資料分別建立 Token。GitHub 官方也建議使用 Fine-grained token、最小權限與最短合理期限。
+
+Token 的保存規則：
+
+- 預設只存在目前頁面的 JavaScript 記憶體。
+- 勾選「在此分頁期間暫存」才會寫入 `sessionStorage`，關閉分頁後清除。
+- 不會寫入 `localStorage`、Cookie、網址、JSON、console log 或 Git commit。
+- 私人頁按 **鎖定** 會清除 Token、記憶體資料及已渲染的私人內容。
+
+## 第五步：發布 GitHub Pages
+
+1. 到 Fork 的 **Settings → Actions → General**。
+2. 在 Actions permissions 選 **Allow all actions and reusable workflows**，按 Save。
+3. 到 **Settings → Pages**。
+4. Source 選 **Deploy from a branch**。
+5. Branch 選 `main`，Folder 選 `/(root)`，按 Save。
+6. 到 Repository 的 **Actions** 等待 `pages build and deployment` 完成。
+
+完成後網址通常是：
+
+```text
+https://你的帳號.github.io/你的-Repository-名稱/
+```
+
+本專案已有 `.nojekyll`，不需要 npm build 或 Jekyll。Pages 使用公開 Repository 時可搭配 GitHub Free；即使來源 Repository 是私人且方案允許 Pages，發布出的網站仍可能是公開的，因此私人資料仍應放在獨立 Private Repository。
+
+## 第六步：從頁面新增連結
+
+### 公開工具箱
+
+1. 開啟 GitHub Pages 網站。
+2. 在公開工具箱右上角按 **管理**。
+3. 輸入已授權公開 Fork、Contents 為 Read and write 的 Token。
+4. 按 **新增項目**。
+5. 填入標題、`http://` 或 `https://` 網址、說明與類型。
+6. 視需要選擇標籤、最愛與縮圖來源。
+7. 儲存後，網站會透過 GitHub Contents API 更新 `data/tools.json`。
+
+### 私人連結庫
+
+1. 開啟網站的 `private.html`。
+2. 輸入已授權 Private Repository 的 Token。
+3. 若資料檔尚不存在，按 **建立預設 JSON**。
+4. 建立完成後按 **新增項目**，操作方式與公開工具箱相同。
+5. 使用完畢按右上角 **鎖定**。
+
+公開資料更新後，管理模式會立即顯示 API 回傳的內容；一般訪客由 GitHub Pages 讀取靜態 `data/tools.json`，可能需要等待 Pages 完成下一次部署與快取更新。
+
+## 類型、標籤與縮圖
+
+- 每筆項目必須選擇一個類型，可選零到多個標籤。
+- Type／Tag 名稱經 Unicode NFKC 正規化並忽略大小寫後不可重複。
+- 外部縮圖網址只允許 `https:`。
+- 上傳縮圖只接受 JPEG、PNG、WebP，預設最多 2 MB。
+- Repository 縮圖使用 UUID 檔名，避免覆蓋同名檔案。
+- 所有時間以 ISO 8601 UTC 儲存。
+
+## 更新 Fork
+
+Fork 與原專案保持關聯。若 GitHub 顯示 **Sync fork**，同步前先確認不會覆蓋你在 `config.js`、`data/tools.json` 與介面上的自訂內容；建議先建立備份 branch，或透過 Pull Request 檢視差異。
+
+## 本機開發與測試
+
+瀏覽器 ES Modules 需要由 HTTP 開啟。專案附有零相依的本機伺服器：
 
 ```powershell
 node tests/dev-server.mjs 4173
 ```
 
-然後開啟 `http://127.0.0.1:4173/`。自動測試只需要 Node.js 20 或更新版本，不會安裝任何套件：
+瀏覽 `http://127.0.0.1:4173/`。測試需要 Node.js 20 以上，不會安裝第三方套件：
 
 ```powershell
 npm test
 ```
 
-測試涵蓋資料正規化與錯誤拒絕、搜尋組合、Contents API UTF-8／SHA 寫入、衝突訊息，以及私人頁與 Token 儲存安全檢查。
+## 常見問題
 
-## 資料與縮圖規則
+### Pages 設定完成，但網址仍是 404
 
-JSON schema 範例在 [`data/tools.json`](./data/tools.json)。主要限制：
+- 確認 Actions permissions 不是 Disable actions。
+- 確認 Pages 使用 `main` 與 `/(root)`。
+- 確認 Actions 出現 `pages build and deployment`。
+- 若設定早於 Actions 啟用，可推送一個新 commit 重新觸發。
 
-- 項目 ID 由 `crypto.randomUUID()` 產生。
-- 標題去除頭尾空白後 1–120 字；說明最多 500 字。
-- 連結只允許 `http:` 與 `https:`；外部縮圖只允許 `https:`。
-- 每筆項目必須引用有效類型；標籤不可重複且必須存在。
-- Type／Tag 名稱以 Unicode NFKC 正規化並忽略大小寫後不可重複。
-- 上傳縮圖只接受 JPEG、PNG、WebP，預設上限 2 MB；檔名使用 UUID。
-- 所有時間以 ISO 8601 UTC 儲存。
+### Token 顯示沒有權限
 
-上傳新縮圖時，網站先上傳圖片再提交 JSON；若 JSON 提交失敗會盡力清理剛上傳的檔案。刪除或替換舊縮圖時則先成功提交 JSON，再清理不再引用的圖片，避免資料指向不存在的檔案。
+- 確認 Token 尚未過期。
+- 確認 Only select repositories 包含正確 Repository。
+- 瀏覽至少需要 Contents Read-only；編輯需要 Contents Read and write。
+- Organization 擁有的 Repository 可能要求管理員核准 Token。
 
-## 安全邊界
+### 私人資料檔無法建立
 
-這是純前端 GitHub Pages 應用，無法替公開頁提供伺服器端登入。安全性來自 GitHub 本身對 Token 與 Repository 的授權：
+- 確認私人 Repository 已用 README 建立 `main` branch。
+- 確認 `config.js` 的 owner、repo、branch 與 dataPath 正確。
+- 確認 Token 對該 Repository 有 Contents Read and write。
 
-- 公開 JSON 與縮圖本來就可被所有訪客取得。
-- 私人資料只存在 Private Repository，且只在使用者提供有效 Token 後由瀏覽器取得。
-- 私人頁 HTML、JavaScript bundle 與公開 Repository 都不包含私人資料。
-- DOM 內容全部用 `textContent`／屬性 API 建立，不把 Repository 文字插入 `innerHTML`。
-- 外部連結使用 `noopener noreferrer` 與 `no-referrer`。
-- Token 仍會存在已解鎖分頁的記憶體中；不要在不信任的裝置或瀏覽器擴充套件環境輸入 Token。
+## 官方參考
 
-## 瀏覽器支援
+- [GitHub：建立與管理 Fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- [GitHub：API Token 最小權限與安全建議](https://docs.github.com/en/rest/authentication/keeping-your-api-credentials-secure)
+- [GitHub：設定 Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+- [GitHub：建立 Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
 
-目標為最新穩定版 Chrome、Edge、Firefox 與 Safari。需要支援 `crypto.randomUUID()`、`<dialog>`、ES Modules、`fetch`、`structuredClone()` 與 `:has()` 的現代瀏覽器。
+## License
+
+[MIT](./LICENSE)

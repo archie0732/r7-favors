@@ -20,6 +20,7 @@
       <nav class="site-nav" aria-label="主要導覽">
         <a href="./index.html">公開工具箱</a>
         <a class="is-current" href="./private.html" aria-current="page">私人連結庫</a>
+        <a href="./index.html#guide">使用指南</a>
       </nav>
       <button class="button button-quiet" id="lock-button" type="button" hidden>鎖定</button>
     </header>
@@ -40,21 +41,32 @@
       </section>
 
       <section class="private-content" id="private-content" hidden aria-label="私人連結">
-        <section class="intro" aria-labelledby="collection-title">
-          <div><p class="eyebrow">PRIVATE COLLECTION</p><h1 id="collection-title">只屬於你的工作捷徑。</h1><p class="lede">內容直接從私人 GitHub Repository 讀取。</p></div>
-          <div class="collection-count"><strong id="visible-count">—</strong><span>個連結</span></div>
+        <section class="private-initializer" id="private-initializer" hidden aria-labelledby="initializer-title">
+          <div class="initializer-mark" aria-hidden="true">{ }</div>
+          <p class="eyebrow">FIRST RUN</p>
+          <h1 id="initializer-title">建立私人連結庫的第一份資料。</h1>
+          <p>指定的資料檔還不存在。按下按鈕後，網站會在你的 Private Repository 建立含有預設類型與標籤的安全 JSON。</p>
+          <p class="repo-path"><span>建立位置</span><code id="private-data-path"></code></p>
+          <button class="button button-primary" id="initialize-private-data" type="button">建立預設 JSON</button>
+          <p class="form-error" id="initializer-error" role="alert"></p>
         </section>
-        <section class="tool-surface">
-          <form class="toolbar" id="filter-form" role="search">
-            <label class="search-field"><span class="visually-hidden">搜尋連結</span><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 4 4"></path></svg><input id="search-input" type="search" autocomplete="off" placeholder="搜尋私人連結…"></label>
-            <label class="select-field"><span class="visually-hidden">依類型篩選</span><select id="type-filter"><option value="">所有類型</option></select></label>
-            <label class="checkbox-field"><input id="favorites-filter" type="checkbox"><span>只看收藏</span></label>
-            <button class="button button-quiet" id="clear-filters" type="button">清除</button>
-          </form>
-          <div class="tag-filters" id="tag-filters" aria-label="依標籤篩選"></div>
-          <div class="status-panel" id="status-panel" role="status"><span class="spinner" aria-hidden="true"></span><p>正在安全載入…</p></div>
-          <div class="card-grid" id="card-grid" hidden></div>
-        </section>
+        <div id="private-collection" hidden>
+          <section class="intro" aria-labelledby="collection-title">
+            <div><p class="eyebrow">PRIVATE COLLECTION</p><h1 id="collection-title">只屬於你的工作捷徑。</h1><p class="lede">內容直接從私人 GitHub Repository 讀取。</p></div>
+            <div class="collection-count"><strong id="visible-count">—</strong><span>個連結</span></div>
+          </section>
+          <section class="tool-surface">
+            <form class="toolbar" id="filter-form" role="search">
+              <label class="search-field"><span class="visually-hidden">搜尋連結</span><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 4 4"></path></svg><input id="search-input" type="search" autocomplete="off" placeholder="搜尋私人連結…"></label>
+              <label class="select-field"><span class="visually-hidden">依類型篩選</span><select id="type-filter"><option value="">所有類型</option></select></label>
+              <label class="checkbox-field"><input id="favorites-filter" type="checkbox"><span>只看收藏</span></label>
+              <button class="button button-quiet" id="clear-filters" type="button">清除</button>
+            </form>
+            <div class="tag-filters" id="tag-filters" aria-label="依標籤篩選"></div>
+            <div class="status-panel" id="status-panel" role="status"><span class="spinner" aria-hidden="true"></span><p>正在安全載入…</p></div>
+            <div class="card-grid" id="card-grid" hidden></div>
+          </section>
+        </div>
       </section>
     </main>
 

@@ -22,6 +22,14 @@ test("locking the private page clears rendered private data", async () => {
   assert.match(privateController, /function lock\(\)[\s\S]*app\.clearDataView\(\)/);
 });
 
+test("private initializer creates starter JSON only after authenticated unlock", async () => {
+  const html = await readFile(join(root, "private.html"), "utf8");
+  const controller = await readFile(join(root, "js/private-page.js"), "utf8");
+  assert.match(html, /id="initialize-private-data"/);
+  assert.match(controller, /initializeButton\.addEventListener\("click"/);
+  assert.match(controller, /store\.saveData\(createStarterData\(\)/);
+});
+
 test("config contains no GitHub token-like value", async () => {
   const config = await readFile(join(root, "config.js"), "utf8");
   assert.doesNotMatch(config, /github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]+/);
