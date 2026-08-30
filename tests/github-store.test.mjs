@@ -52,3 +52,14 @@ test("turns conflicts into an understandable error", async () => {
   const store = new GitHubContentsStore(source, "token", mockFetch);
   await assert.rejects(store.saveData(data, "stale"), /重新載入/);
 });
+
+test("distinguishes browser network failures from repository 404 responses", async () => {
+  const store = new GitHubContentsStore(source, "token", async () => { throw new TypeError("Failed to fetch"); });
+  await assert.rejects(store.getAccess(), /不是 Repository 404/);
+});
+
+test("identifies the configured repository when access returns 404", async () => {
+  const mockFetch = async () => new Response(JSON.stringify({ message: "Not Found" }), { status: 404 });
+  const store = new GitHubContentsStore(source, "token", mockFetch);
+  await assert.rejects(store.getAccess(), /owner\/repo.*Only select repositories/);
+});

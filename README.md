@@ -73,6 +73,8 @@ Repository 名稱與資料路徑不是密鑰，可以放在公開設定。**絕�
 4. 勾選 **Add a README file**，讓 Repository 先建立 `main` branch。
 5. 建立 Repository，然後把名稱填回公開 Fork 的 `config.js`。
 
+網站不會建立 Private Repository 本身。它只會依 `config.js` 的 `owner`、`repo`、`branch` 與 `dataPath` 存取已存在且已授權的 Repository。
+
 不必手動建立 `data/private-links.json`。首次開啟私人頁、輸入具寫入權限的 Token 後，按 **建立預設 JSON**，網站會在 `privateSource.dataPath` 指定的位置建立：
 
 - 三個預設類型：網頁工具、參考資料、影片。
@@ -81,7 +83,7 @@ Repository 名稱與資料路徑不是密鑰，可以放在公開設定。**絕�
 
 ## 第四步：建立最小權限 GitHub Token
 
-建議使用 [Fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)，不要使用 GitHub 密碼，也不要優先使用 classic token。
+建議使用 [Fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)，不要使用 GitHub 密碼或 SSH public key，也不要優先使用 classic token。
 
 建立時：
 

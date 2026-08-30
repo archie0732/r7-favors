@@ -31,11 +31,16 @@ function base64ToBytes(base64) {
   return bytes;
 }
 
-function friendlyGitHubError(status, message, remaining) {
-  if (status === 401) return "Token 無效或已過期，請重新輸入。";
+function repositoryLabel(source) {
+  return `${source.owner}/${source.repo}`;
+}
+
+function friendlyGitHubError(status, message, remaining, source) {
+  const repository = repositoryLabel(source);
+  if (status === 401) return "PAT 無效或已過期，請重新輸入；SSH public key 不能用於此欄位。";
   if (status === 403 && remaining === "0") return "GitHub API 使用額度已達上限，請稍後再試。";
-  if (status === 403) return "Token 沒有此 Repository 的必要權限。";
-  if (status === 404) return "找不到 Repository 或資料檔；若為私人 Repository，請確認 Token 已授權。";
+  if (status === 403) return `PAT 沒有 ${repository} 的必要權限；請確認 Only select repositories 已包含它，且 Contents 權限符合用途。`;
+  if (status === 404) return `找不到 ${repository}，或 PAT 未獲准存取它；請確認 config.js 的 owner/repo 與 Only select repositories。`;
   if (status === 409) return "資料已被其他工作階段更新。請重新載入後再儲存。";
   if (status === 422) return `GitHub 拒絕這次更新：${message || "請檢查檔案內容與路徑。"}`;
   return `GitHub API 回應錯誤（${status}）。${message || "請稍後再試。"}`;
@@ -66,13 +71,13 @@ export class GitHubContentsStore {
     try {
       response = await this.fetchImpl(url, { ...options, headers, referrerPolicy: "no-referrer" });
     } catch {
-      throw new GitHubApiError("無法連線 GitHub。請檢查網路後再試。", 0, "network_error");
+      throw new GitHubApiError("瀏覽器無法連線 api.github.com；這不是 Repository 404。請檢查網路、代理、DNS 或擴充套件是否封鎖 GitHub API。", 0, "network_error");
     }
     const text = response.status === 204 ? "" : await response.text();
     let payload = null;
     try { payload = text ? JSON.parse(text) : null; } catch { payload = null; }
     if (!response.ok) {
-      const message = friendlyGitHubError(response.status, payload?.message, response.headers.get("x-ratelimit-remaining"));
+      const message = friendlyGitHubError(response.status, payload?.message, response.headers.get("x-ratelimit-remaining"), this.source);
       throw new GitHubApiError(message, response.status, response.status === 409 ? "conflict" : "github_error");
     }
     return payload;

@@ -20,6 +20,7 @@ const initializer = byId("private-initializer");
 const collection = byId("private-collection");
 const initializeButton = byId("initialize-private-data");
 const initializerError = byId("initializer-error");
+byId("private-repo-target").textContent = `${source.owner}/${source.repo}`;
 byId("private-data-path").textContent = `${source.owner}/${source.repo}/${source.dataPath}`;
 
 function lock() {

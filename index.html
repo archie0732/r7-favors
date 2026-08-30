@@ -121,10 +121,11 @@
 
     <dialog class="dialog" id="token-dialog" aria-labelledby="token-title">
       <form method="dialog" class="dialog-card" id="token-form">
-        <button class="icon-button dialog-close" value="cancel" aria-label="關閉">×</button>
+        <button class="icon-button dialog-close" id="token-dialog-close" type="button" aria-label="關閉">×</button>
         <p class="eyebrow">ADMIN ACCESS</p>
         <h2 id="token-title">連接 GitHub</h2>
-        <p>Token 只保留在記憶體；若勾選暫存，關閉此分頁後即清除。</p>
+        <p>這裡需要 Fine-grained personal access token（PAT），不是 SSH public key。Token 只保留在記憶體；若勾選暫存，關閉此分頁後即清除。</p>
+        <p class="repo-path"><span>目前目標</span><code id="public-repo-target"></code></p>
         <label class="form-field"><span>Fine-grained personal access token</span><input id="token-input" type="password" autocomplete="off" spellcheck="false" required placeholder="github_pat_…"></label>
         <label class="checkbox-field"><input id="remember-token" type="checkbox"><span>在此分頁期間暫存</span></label>
         <p class="form-error" id="token-error" role="alert"></p>

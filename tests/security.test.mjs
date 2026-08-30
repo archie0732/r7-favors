@@ -34,3 +34,10 @@ test("config contains no GitHub token-like value", async () => {
   const config = await readFile(join(root, "config.js"), "utf8");
   assert.doesNotMatch(config, /github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]+/);
 });
+
+test("public token dialog close control cannot submit the token form", async () => {
+  const html = await readFile(join(root, "index.html"), "utf8");
+  const controller = await readFile(join(root, "js/public-page.js"), "utf8");
+  assert.match(html, /id="token-dialog-close" type="button"/);
+  assert.match(controller, /tokenDialogClose\.addEventListener\("click", \(\) => tokenDialog\.close\(\)\)/);
+});

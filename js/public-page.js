@@ -13,7 +13,9 @@ const tokenForm = byId("token-form");
 const tokenInput = byId("token-input");
 const tokenError = byId("token-error");
 const rememberToken = byId("remember-token");
+const tokenDialogClose = byId("token-dialog-close");
 const adminButton = byId("admin-button");
+byId("public-repo-target").textContent = `${source.owner}/${source.repo}`;
 
 // Public browsing uses the Pages-served copy from this Repository. Admin mode
 // refreshes from the Contents API before allowing any write.
@@ -72,6 +74,12 @@ tokenForm.addEventListener("submit", async (event) => {
   const token = tokenInput.value.trim();
   tokenError.textContent = token ? "" : "請輸入 GitHub Token。";
   if (token) await unlockAdmin(token, rememberToken.checked);
+});
+
+tokenDialogClose.addEventListener("click", () => tokenDialog.close());
+tokenDialog.addEventListener("close", () => {
+  tokenInput.value = "";
+  tokenError.textContent = "";
 });
 
 const savedToken = configured ? readSessionToken(source) : "";
