@@ -79,7 +79,7 @@
           <article class="guide-card guide-card-accent">
             <span class="step-number">02</span>
             <h3>建立最小權限 Token</h3>
-            <p>使用 Fine-grained personal access token，只選公開工具庫與私人資料庫；Repository permissions 的 Contents 依用途設定。</p>
+            <p>Settings → Developer Settings → Fine-grained tokens → Generate new token。Repository access 選 <code>Only select repositories</code>，Permissions 只加 <code>Contents</code>，依用途設 Read-only 或 Read and write，產生後立刻複製。</p>
             <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">建立 Fine-grained token ↗</a>
           </article>
           <article class="guide-card">
@@ -108,7 +108,10 @@
           <ol>
             <li>建立公開 Fork，並在 <code>config.js</code> 設定 <code>publicSource</code>。</li>
             <li>另外建立 Private Repository。在私人頁的解鎖表單貼上它的連結（<code>owner/repo</code> 或 GitHub 網址）即可連接；<code>config.js</code> 的 <code>privateSource</code> 只是預設值，可留空。</li>
-            <li>建立只授權指定 Repository 的 Fine-grained token；需要編輯時將 Contents 設為 Read and write。</li>
+            <li>建立 Fine-grained token：填 Token name、設定 Expiration（選 <code>No expiration</code> 會被 GitHub 警告）。</li>
+            <li>Repository access 選 <code>Only select repositories</code>，只勾要用的庫；確認顯示 <code>Selected 1 repository</code>。</li>
+            <li>Permissions → <code>Add permissions</code> → 搜尋 <code>conte</code> → 勾 <code>Contents</code>，需要編輯時把 Access 改成 Read and write（<code>Metadata</code> 由 GitHub 自動加入）。</li>
+            <li>按 <code>Generate token</code> 後立刻複製 <code>github_pat_…</code>；它只顯示一次，忘了複製就 Delete 重做。</li>
             <li>開啟<a href="./private.html">私人頁</a>，貼上 Repository 與 Token；資料檔不存在時，按「建立預設 JSON」。頁面內的「第一次連接私人 Repository？」有完整步驟。</li>
             <li>到 Settings → Actions → General 允許 Actions，再到 Settings → Pages 選擇 <code>main</code> 與 <code>/(root)</code>。</li>
           </ol>

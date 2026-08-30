@@ -49,13 +49,29 @@
                 <a href="https://github.com/new" target="_blank" rel="noopener noreferrer">New repository ↗</a>
               </li>
               <li>
-                <h2>建立最小權限 Token</h2>
-                <p>Repository access 選 <code>Only select repositories</code> 並勾選這個庫；Repository permissions → <code>Contents</code> 選 <code>Read-only</code> 或 <code>Read and write</code>。</p>
-                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained token ↗</a>
+                <h2>開啟 Fine-grained tokens 頁面</h2>
+                <p>GitHub 右上角頭像 → <code>Settings</code> → 左側最底的 <code>Developer Settings</code> → <code>Personal access tokens</code> → <code>Fine-grained tokens</code>，再按右上角的 <code>Generate new token</code>。</p>
+                <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Fine-grained tokens ↗</a>
               </li>
               <li>
-                <h2>貼上 Repository 與 Token</h2>
-                <p>上方欄位接受 <code>owner/repo</code>、完整 GitHub 網址，或 <code>…/tree/branch</code> 指定分支。不需要編輯 <code>config.js</code>。</p>
+                <h2>填 Token name 與 Expiration</h2>
+                <p>Token name 隨意（例如 <code>favors</code>），Description 可留空，Resource owner 保持自己的帳號。Expiration 建議設一個到期日；選 <code>No expiration</code> 會出現 GitHub 的安全性警告，到期後只要重做這一段再貼一次新 Token 即可。</p>
+              </li>
+              <li>
+                <h2>Repository access 選 Only select repositories</h2>
+                <p>不要選 <code>All repositories</code>。點 <code>Select repositories</code> 下拉，挑剛剛建立的私人庫，確認下方顯示 <code>Selected 1 repository</code> 且列出 <code>owner/repo</code>。</p>
+              </li>
+              <li>
+                <h2>Permissions 只加 Contents</h2>
+                <p>在 Permissions 區塊按 <code>Add permissions</code>，搜尋框輸入 <code>conte</code>，勾選 <code>Contents</code>。加入後把右側 <code>Access</code> 從 <code>Read-only</code> 改成 <code>Read and write</code>（只想瀏覽可維持 Read-only，但就不能新增或修改）。<code>Metadata</code> 會被 GitHub 自動加入且標示 Required，不用理它。</p>
+              </li>
+              <li>
+                <h2>Generate token 並立刻複製</h2>
+                <p>捲到最底按綠色的 <code>Generate token</code>。產生後畫面只會顯示這一次，用右邊的複製鈕把 <code>github_pat_…</code> 收好；忘了複製就刪掉重做。不要把它貼進 <code>config.js</code>、commit 或任何聊天視窗。</p>
+              </li>
+              <li>
+                <h2>回到本頁貼上 Repository 與 Token</h2>
+                <p>上方第一欄填 <code>owner/repo</code>、完整 GitHub 網址或 <code>…/tree/branch</code>；第二欄貼剛剛複製的 Token。想在這個分頁重整後免再貼一次，就勾「在此分頁期間暫存」，關掉分頁即清除。按<strong>解鎖私人連結庫</strong>。</p>
               </li>
               <li>
                 <h2>建立第一份資料</h2>
@@ -63,12 +79,14 @@
               </li>
               <li>
                 <h2>下次更快</h2>
-                <p>解鎖成功後網址會補上 <code>?repo=owner/repo</code>，加入書籤即可自動帶入；換一個私人庫只要改上方欄位。</p>
+                <p>解鎖成功後網址會補上 <code>?repo=owner/repo</code>，加入書籤即可自動帶入；換一個私人庫只要改上方欄位。Token 過期或外洩時，回 Fine-grained tokens 頁按 <code>Delete</code> 再重新產生。</p>
               </li>
             </ol>
             <dl class="gate-troubles">
               <div><dt>找不到 owner/repo</dt><dd>Token 的 Only select repositories 沒有包含它，不是網路問題。</dd></div>
               <div><dt>沒有必要權限</dt><dd>把 Contents 從 Read-only 調成 Read and write。</dd></div>
+              <div><dt>Token 忘了複製</dt><dd>那一頁關掉就看不到了。回 Fine-grained tokens 按 Delete，重新產生一個。</dd></div>
+              <div><dt>驗證一直失敗</dt><dd>確認貼的是 <code>github_pat_…</code> 而不是 SSH key，且 Token 尚未過期。</dd></div>
             </dl>
           </div>
         </details>
