@@ -5,11 +5,13 @@ import { byId, debounce, errorMessage, formatDate, setBusy } from "./utils.js";
 import { button, closeButton, element, formField, openDialog, showStatus, showToast } from "./ui.js";
 
 export class ToolboxApp {
-  constructor({ source, store, config, privateMode = false }) {
+  constructor({ source, store, config, privateMode = false, adminActions = [] }) {
     this.source = source;
     this.store = store;
     this.config = config;
     this.privateMode = privateMode;
+    // 頁面自己決定管理列右側還要放什麼（公開頁放換 Token 與退出管理）。
+    this.adminActions = adminActions;
     this.data = null;
     this.sha = "";
     this.admin = privateMode;
@@ -100,7 +102,8 @@ export class ToolboxApp {
         element("div", { className: "admin-actions" }, [
           button("新增項目", "button button-primary", { onclick: () => this.openItemEditor() }),
           button("類型與標籤", "button button-quiet", { onclick: () => this.openTaxonomyEditor() }),
-          button("重新載入", "button button-quiet", { onclick: () => this.reloadFromGitHub() })
+          button("重新載入", "button button-quiet", { onclick: () => this.reloadFromGitHub() }),
+          ...this.adminActions.map(({ label, className = "button button-quiet", onClick }) => button(label, className, { onclick: onClick }))
         ])
       ]);
       document.querySelector(".tool-surface")?.prepend(bar);

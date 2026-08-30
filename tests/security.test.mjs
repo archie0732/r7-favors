@@ -30,6 +30,12 @@ test("private initializer creates starter JSON only after authenticated unlock",
   assert.match(controller, /store\.saveData\(createStarterData\(\)/);
 });
 
+test("exiting public admin mode drops the token from memory and session storage", async () => {
+  const controller = await readFile(join(root, "js/public-page.js"), "utf8");
+  assert.match(controller, /async function exitAdmin\([\s\S]*?store\.setToken\(""\);[\s\S]*?clearSessionToken\(source\);[\s\S]*?app\.setAdmin\(false\);/);
+  assert.match(controller, /async function switchToken\(\) \{\s*await exitAdmin\(\);/);
+});
+
 test("config contains no GitHub token-like value", async () => {
   const config = await readFile(join(root, "config.js"), "utf8");
   assert.doesNotMatch(config, /github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]+/);
