@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-28T12:00:00.000Z",
+  "updatedAt": "2026-09-09T11:26:39.764Z",
   "types": [
     {
       "id": "video",
@@ -38,6 +38,22 @@
   ],
   "items": [
     {
+      "id": "52c9d29e-e498-41cf-834f-552365dc034a",
+      "title": "figma",
+      "url": "https://www.figma.com/files/team/1679127114425195417/recents-and-sharing/recently-viewed?fuid=1679127112954219698",
+      "description": "",
+      "thumbnail": {
+        "kind": "default",
+        "value": ""
+      },
+      "typeId": "web-tool",
+      "tagIds": [],
+      "favorite": false,
+      "watchLater": false,
+      "createdAt": "2026-09-09T11:26:39.764Z",
+      "updatedAt": "2026-09-09T11:26:39.764Z"
+    },
+    {
       "id": "0198f7ac-example",
       "title": "範例工具",
       "url": "https://example.com/",
@@ -51,6 +67,7 @@
         "productivity"
       ],
       "favorite": true,
+      "watchLater": false,
       "createdAt": "2026-08-28T12:00:00.000Z",
       "updatedAt": "2026-08-28T12:00:00.000Z"
     }
