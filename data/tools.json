@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-09T11:26:39.764Z",
+  "updatedAt": "2026-09-09T11:26:52.602Z",
   "types": [
     {
       "id": "video",
@@ -33,6 +33,11 @@
     {
       "id": "productivity",
       "name": "生產力",
+      "groupId": ""
+    },
+    {
+      "id": "新標籤-4",
+      "name": "流程圖",
       "groupId": ""
     }
   ],
