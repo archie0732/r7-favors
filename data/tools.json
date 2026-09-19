@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-09T11:26:58.416Z",
+  "updatedAt": "2026-09-19T14:26:30.308Z",
   "types": [
     {
       "id": "video",
@@ -42,6 +42,22 @@
     }
   ],
   "items": [
+    {
+      "id": "6ec1419d-9560-4031-b740-718b383f4f54",
+      "title": "背單字",
+      "url": "https://archie0732.github.io/vocabulary/",
+      "description": "",
+      "thumbnail": {
+        "kind": "default",
+        "value": ""
+      },
+      "typeId": "reference",
+      "tagIds": [],
+      "favorite": false,
+      "watchLater": false,
+      "createdAt": "2026-09-19T14:26:30.308Z",
+      "updatedAt": "2026-09-19T14:26:30.308Z"
+    },
     {
       "id": "52c9d29e-e498-41cf-834f-552365dc034a",
       "title": "figma",
